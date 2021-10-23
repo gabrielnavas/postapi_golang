@@ -2,21 +2,10 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"postapi/app/posts"
 
 	_ "github.com/lib/pq"
-)
-
-var (
-	dbUsername = "postgres"
-	dbPassword = "postgres"
-	dbHost     = "localhost"
-	dbName     = "database"
-	dbPort     = "5432"
-	pgConnStr  = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
-		dbHost, dbPort, dbUsername, dbName, dbPassword)
 )
 
 type PostDB interface {
@@ -35,7 +24,8 @@ func (d *DB) Open() error {
 		return err
 	}
 	log.Println("Connected to Database!")
-	pg.Exec(posts.CreateSchema)
+	log.Println("Creating tables")
+	createTables(pg)
 	d.db = pg
 	return nil
 }
@@ -46,4 +36,8 @@ func (d *DB) Close() error {
 
 func (d *DB) GetDB() *sql.DB {
 	return d.db
+}
+
+func createTables(sql *sql.DB) {
+	sql.Exec(posts.CreateSchema)
 }
